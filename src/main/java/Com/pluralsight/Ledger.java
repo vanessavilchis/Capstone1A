@@ -49,17 +49,17 @@ public class Ledger {
 //Starts a switch statement - checks what letter the user entered.
         switch (option) {
             case "D":
-                System.out.println("==============================");
+                System.out.println("=================================");
                 System.out.println("\nPlease add your deposit information below: ");
                 addDeposit();
                 break; //  exits the switch
             case "P":
-                System.out.println("==============================");
-                System.out.println("\nMake a payment ");
+                System.out.println("=================================");
+                System.out.println("\nEnter payment information ");
                 makePayment();
                 break;
             case "L":
-                System.out.println("==============================");
+                System.out.println("=================================");
                 System.out.println("\n Display ledger ");
                 ledgerScreen();
                 break;
@@ -230,11 +230,11 @@ public class Ledger {
             System.out.println("==================================");
             System.out.println(" A - All - Display all entries");
             System.out.println(" D - Deposits - Display only deposits");
-            System.out.println(" P - Payments - Show only payments");
+            System.out.println(" P - Payments - Display only payments");
             System.out.println(" R - Reports - Run reports");
             System.out.println(" H - Home - Go back to home");
-            System.out.print("\nEnter your choice: ");
-            System.out.println("==================================");
+            System.out.print("Enter your choice: ");
+            System.out.println("=====================");
 
             String choice = scanner.nextLine().trim().toUpperCase();
 
