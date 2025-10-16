@@ -3,6 +3,7 @@ package Com.pluralsight;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 
@@ -178,7 +179,7 @@ public class Ledger {
                 String timeInput = scanner.nextLine().trim();
 
                 if (timeInput.isEmpty()) {
-                    time = LocalTime.now();
+                    time = LocalTime.now(); //gets the current time from  computer
                     break;
                 }
                 try {
@@ -189,6 +190,7 @@ public class Ledger {
                 }
             }
         } else {
+            //If user typed "y"
             date = LocalDate.now();
             time = LocalTime.now();
         }
@@ -205,10 +207,95 @@ public class Ledger {
             // Always make payments negative bc we are making a payment so -
             amount = -Math.abs(amount);
 
+
+            //Creates a new Transaction object by collecting data and storing it in variable "payment"
             Transaction payment = new Transaction(date, time, description, vendor, amount);
+
+            //This method writes the transaction to the CSV file
             saveTransaction(payment);
             System.out.println("Payment saved successfully!");
         }
+        //method that displays the ledger menu
+    public static void ledgerScreen() {
+       //keep showing menu until close
+        boolean keepRunning = true;
+
+        while (keepRunning) {
+            System.out.println("==================================");
+            System.out.println("             Ledger               ");
+            System.out.println("             Screen               ");
+            System.out.println("==================================");
+            System.out.println(" A - All - Display all entries");
+            System.out.println(" D - Deposits - Display only deposits");
+            System.out.println(" P - Payments - Show only payments");
+            System.out.println(" R - Reports - Run reports");
+            System.out.println(" H - Home - Go back to home");
+            System.out.print("\nEnter your choice: ");
+            System.out.println("==================================");
+
+            String choice = scanner.nextLine().trim().toUpperCase();
+
+//checks what letter user entered and executes matching case.
+            switch (choice) {
+                case "A":
+                    System.out.println("\n -----ALL TRANSACTIONS---Newest First)-----");
+                    displayAll();
+                    break;
+                case "D":
+                    System.out.println("\n-----DEPOSITS ONLY---Newest First)------");
+                    displayDeposits();
+                    break;
+                case "P":
+                    System.out.println("\n-----PAYMENTS ONLY---Newest First----");
+                    displayPayments();
+                    break;
+                case "R":
+                    reportsScreen();
+                    break;
+                case "H":
+                    keepRunning = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter A, D, P, R, or H.");
+            }
+            // pause after displaying transactions
+            // in ledger menu AND user chose to see all transactions OR chose deposits or Payments
+            if (keepRunning && (choice.equals("A") || choice.equals("D") || choice.equals("P"))) {
+                System.out.println("\nPress ENTER to continue...");
+                scanner.nextLine();
+            }
+        }
+    }
+    //method to display all transactions both deposits and payments
+    public static void displayAll() {
+        //Loads all transactions from CSV file and returns an ArrayList
+        //Stores all transactions in transactions variable
+        ArrayList<Transaction> transactions = loadTransactions();
+
+        if (transactions.isEmpty()) {
+            System.out.println("No transactions found.");
+            //exits the method
+            return;
+        }
+
+        //Prints formatted column headers
+        System.out.printf("%-12s | %-10s | %-25s | %-20s | %12s\n",
+                "Date", "Time", "Description", "Vendor", "Amount");
+        System.out.println("-".repeat(90));
+
+        // Show newest first (reverse order)
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction t = transactions.get(i);
+            System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
+                    t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                    t.getTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                    t.getDescription(),
+                    t.getVendor(),
+                    t.getAmount());
+        }
+    }
+
+
         }
 
     }
