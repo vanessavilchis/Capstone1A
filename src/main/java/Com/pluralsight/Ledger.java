@@ -296,7 +296,15 @@ public class Ledger {
         System.out.println("-".repeat(90));
 
         // Show newest first so in reverse order
+        //Start at the LAST index (newest transaction)
+        //Continue until we reach index 0
+        //Decrease by 1 each time (moving backwards)
+        // for loop (int index = the number of transactions -1); // index greater than or equal to 0
         for (int i = transactions.size() - 1; i >= 0; i--) {
+
+            // gets one transaction from the Array list
+            // transactions.get(i) = gets the transaction at index
+            // stores in the variable
             Transaction t = transactions.get(i);
             System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
                     t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
