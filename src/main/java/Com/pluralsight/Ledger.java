@@ -1,5 +1,6 @@
 package Com.pluralsight;
 
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +15,7 @@ public class Ledger {
     private static final String FILE_PATH = "src/main/resources/transactions.csv";
 
     public static void main(String[] args) {
-        System.out.println("================================");
+        System.out.println("=================================");
         System.out.println("       Welcome to Ledger App     ");
         System.out.println("=================================");
 
@@ -48,17 +49,17 @@ public class Ledger {
 //Starts a switch statement - checks what letter the user entered.
         switch (option) {
             case "D":
-                System.out.println("===========================");
-                System.out.println("\nPlease add your deposit: ");
+                System.out.println("==============================");
+                System.out.println("\nPlease add your deposit information below: ");
                 addDeposit();
                 break; //  exits the switch
             case "P":
-                System.out.println("====================");
+                System.out.println("==============================");
                 System.out.println("\nMake a payment ");
                 makePayment();
                 break;
             case "L":
-                System.out.println("====================");
+                System.out.println("==============================");
                 System.out.println("\n Display ledger ");
                 ledgerScreen();
                 break;
@@ -145,7 +146,8 @@ public class Ledger {
         saveTransaction(deposit);
         System.out.println("Deposit saved successfully!");
     }
-//method to record a payment - the money going out
+
+    //method to record a payment - the money going out
     public static void makePayment() {
         //Declares variables to store the payment's date and time.
         LocalDate date;
@@ -194,30 +196,31 @@ public class Ledger {
             date = LocalDate.now();
             time = LocalTime.now();
         }
-            System.out.print("Enter description: ");
-            String description = scanner.nextLine();
+        System.out.print("Enter description: ");
+        String description = scanner.nextLine();
 
-            System.out.print("Enter vendor: ");
-            String vendor = scanner.nextLine();
+        System.out.print("Enter vendor: ");
+        String vendor = scanner.nextLine();
 
-            System.out.print("Enter amount: ");
-            double amount = scanner.nextDouble();
-            scanner.nextLine();
+        System.out.print("Enter amount: ");
+        double amount = scanner.nextDouble();
+        scanner.nextLine();
 
-            // Always make payments negative bc we are making a payment so -
-            amount = -Math.abs(amount);
+        // Always make payments negative bc we are making a payment so -
+        amount = -Math.abs(amount);
 
 
-            //Creates a new Transaction object by collecting data and storing it in variable "payment"
-            Transaction payment = new Transaction(date, time, description, vendor, amount);
+        //Creates a new Transaction object by collecting data and storing it in variable "payment"
+        Transaction payment = new Transaction(date, time, description, vendor, amount);
 
-            //This method writes the transaction to the CSV file
-            saveTransaction(payment);
-            System.out.println("Payment saved successfully!");
-        }
-        //method that displays the ledger menu
+        //This method writes the transaction to the CSV file
+        saveTransaction(payment);
+        System.out.println("Payment saved!");
+    }
+
+    //method that displays the ledger menu
     public static void ledgerScreen() {
-       //keep showing menu until close
+        //keep showing menu until close
         boolean keepRunning = true;
 
         while (keepRunning) {
@@ -238,11 +241,11 @@ public class Ledger {
 //checks what letter user entered and executes matching case.
             switch (choice) {
                 case "A":
-                    System.out.println("\n -----ALL TRANSACTIONS---Newest First)-----");
+                    System.out.println("\n -----ALL TRANSACTIONS---Newest First-----");
                     displayAll();
                     break;
                 case "D":
-                    System.out.println("\n-----DEPOSITS ONLY---Newest First)------");
+                    System.out.println("\n-----DEPOSITS ONLY---Newest First------");
                     displayDeposits();
                     break;
                 case "P":
@@ -266,6 +269,10 @@ public class Ledger {
             }
         }
     }
+
+    private static void reportsScreen() {
+    }
+
     //method to display all transactions both deposits and payments
     public static void displayAll() {
         //Loads all transactions from CSV file and returns an ArrayList
@@ -279,11 +286,16 @@ public class Ledger {
         }
 
         //Prints formatted column headers
-        System.out.printf("%-12s | %-10s | %-25s | %-20s | %12s\n",
+        // % placeholder (-) aligned to the left, # is space for characters wide, string and Pipe
+        System.out.printf("%-12s | %-10s | %-25s | %-20s | %12s\n", // Number with commas, 11 characters, 2 decimals format
                 "Date", "Time", "Description", "Vendor", "Amount");
+
+        //separator line printing the - dash 90 times across to separate this is a way to format and separate
+        // easier to read the header and data
+        // 80 characters wide + 10 for extra space and account for pipe
         System.out.println("-".repeat(90));
 
-        // Show newest first (reverse order)
+        // Show newest first so in reverse order
         for (int i = transactions.size() - 1; i >= 0; i--) {
             Transaction t = transactions.get(i);
             System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
@@ -295,9 +307,99 @@ public class Ledger {
         }
     }
 
+    public static void displayDeposits() {
+        ArrayList<Transaction> transactions = loadTransactions();
 
+        System.out.printf("%-12s | %-10s | %-25s | %-20s | %12s\n",
+                "Date", "Time", "Description", "Vendor", "Amount");
+        System.out.println("-".repeat(90));
+
+        boolean hasDeposits = false;
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction t = transactions.get(i);
+
+            // Only show if amount is POSITIVE (money added)
+            if (t.getAmount() > 0) {
+                System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
+                        t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                        t.getTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                        t.getDescription(),
+                        t.getVendor(),
+                        t.getAmount());
+                hasDeposits = true;
+
+            }
         }
+        if (!hasDeposits) {
+            System.out.println("No deposits found.");
+        }
+    }
+
+    public static void displayPayments() {
+        ArrayList<Transaction> transactions = loadTransactions();
+
+        System.out.printf("%-12s | %-10s | %-25s | %-20s | %12s\n",
+                "Date", "Time", "Description", "Vendor", "Amount");
+        System.out.println("-".repeat(90));
+
+        boolean hasPayments = false;
+        for (int i = transactions.size() - 1; i >= 0; i--) {
+            Transaction t = transactions.get(i);
+
+            // Only show if amount is NEGATIVE (money paid)
+            if (t.getAmount() < 0) {
+                System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
+                        t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                        t.getTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                        t.getDescription(),
+                        t.getVendor(),
+                        t.getAmount());
+                hasPayments = true;
+            }
+        }
+        if (!hasPayments) {
+            System.out.println("No deposits found.");
+        }
+    }
+
+    public static ArrayList<Transaction> loadTransactions() {
+        ArrayList<Transaction> transactions = new ArrayList<>();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                LocalDate date = LocalDate.parse(parts[0], DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+                LocalTime time = LocalTime.parse(parts[1], DateTimeFormatter.ofPattern("HH:mm:ss"));
+                String description = parts[2];
+                String vendor = parts[3];
+                double amount = Double.parseDouble(parts[4]);
+                Transaction t = new Transaction(date, time, description, vendor, amount);
+                transactions.add(t);
+            }
+            reader.close();
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+        return transactions;
 
     }
+
+    public static void saveTransaction(Transaction record) {
+        try {
+            BufferedWriter writer = new BufferedWriter(
+                    new FileWriter("src/main/resources/transactions.csv", true));
+            writer.write(record.toCSV());
+            writer.newLine();
+            writer.close();
+            System.out.println("Transaction saved!");
+
+        } catch (IOException e) {
+            System.out.println("Error saving transaction: " + e.getMessage());
+        }
+    }
 }
+
+
 
