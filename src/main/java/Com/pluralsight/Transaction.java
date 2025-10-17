@@ -79,6 +79,6 @@ public class Transaction {
     // when print a trans it shows the CSV format
     @Override
     public String toString() {
-        return toCSV();
+        return toCSV(); // print
     }
 }
