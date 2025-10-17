@@ -307,8 +307,10 @@ public class Ledger {
             // stores in the variable
             Transaction t = transactions.get(i);
             System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
+                    //Gets the LocalDate/time object from transaction and formats it
                     t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
                     t.getTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                    //Gets description, vendor, and amount but does not need to be formatted
                     t.getDescription(),
                     t.getVendor(),
                     t.getAmount());
