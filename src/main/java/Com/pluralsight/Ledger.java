@@ -270,7 +270,57 @@ public class Ledger {
         }
     }
 
-    private static void reportsScreen() {
+    public static void reportsScreen() {
+        boolean keepRunning = true;
+
+        while (keepRunning) {
+            System.out.println("\n==================================");
+            System.out.println("             Reports              ");
+            System.out.println("==================================");
+            System.out.println(" 1) Month To Date");
+            System.out.println(" 2) Previous Month");
+            System.out.println(" 3) Year To Date");
+            System.out.println(" 4) Previous Year");
+            System.out.println(" 5) Search by Vendor");
+            System.out.println(" 0) Back - Return to Ledger");
+            System.out.println("==================================");
+            System.out.print("Enter your choice: ");
+
+            String choice = scanner.nextLine().trim();
+
+            switch (choice) {
+                case "1":
+                    System.out.println("\n-----MONTH TO DATE-----");
+                    displayMonthToDate();
+                    break;
+                case "2":
+                    System.out.println("\n-----PREVIOUS MONTH-----");
+                    displayPreviousMonth();
+                    break;
+                case "3":
+                    System.out.println("\n-----YEAR TO DATE-----");
+                    displayYearToDate();
+                    break;
+                case "4":
+                    System.out.println("\n-----PREVIOUS YEAR-----");
+                    displayPreviousYear();
+                    break;
+                case "5":
+                    System.out.println("\n-----SEARCH BY VENDOR-----");
+                    searchByVendor();
+                    break;
+                case "0":
+                    keepRunning = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+
+            if (keepRunning && !choice.equals("0")) {
+                System.out.println("\nPress ENTER to continue...");
+                scanner.nextLine();
+            }
+        }
     }
 
     //method to display all transactions both deposits and payments
@@ -383,7 +433,7 @@ public class Ledger {
             }
         }
         if (!hasPayments) {
-            System.out.println("No deposits found.");
+            System.out.println("No payments found.");
         }
     }
 // Method that reads the csv file and gives back a list of all transactions
@@ -440,7 +490,136 @@ public class Ledger {
             System.out.println("Error saving transaction: " + e.getMessage());
         }
     }
+    public static void displayMonthToDate() {
+        ArrayList<Transaction> allTransactions = loadTransactions();
+        LocalDate now = LocalDate.now();
+
+        System.out.println("\n=== MONTH TO DATE ===");
+        System.out.printf("%-12s | %-10s | %-25s | %-20s | %12s\n",
+                "Date", "Time", "Description", "Vendor", "Amount");
+        System.out.println("-".repeat(90));
+
+        boolean found = false;
+        for (Transaction t : allTransactions) {
+            if (t.getDate().getMonth() == now.getMonth() &&
+                    t.getDate().getYear() == now.getYear()) {
+                System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
+                        t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                        t.getTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                        t.getDescription(),
+                        t.getVendor(),
+                        t.getAmount());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No transactions found for this month.");
+        }
+    }
+
+    public static void displayPreviousMonth() {
+        ArrayList<Transaction> allTransactions = loadTransactions();
+        LocalDate lastMonth = LocalDate.now().minusMonths(1);
+
+        System.out.println("\n=== PREVIOUS MONTH ===");
+        System.out.printf("%-12s | %-10s | %-25s | %-20s | %12s\n",
+                "Date", "Time", "Description", "Vendor", "Amount");
+        System.out.println("-".repeat(90));
+
+        boolean found = false;
+        for (Transaction t : allTransactions) {
+            if (t.getDate().getMonth() == lastMonth.getMonth() &&
+                    t.getDate().getYear() == lastMonth.getYear()) {
+                System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
+                        t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                        t.getTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                        t.getDescription(),
+                        t.getVendor(),
+                        t.getAmount());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No transactions found for previous month.");
+        }
+    }
+
+    public static void displayYearToDate() {
+        ArrayList<Transaction> allTransactions = loadTransactions();
+        int currentYear = LocalDate.now().getYear();
+
+        System.out.println("\n=== YEAR TO DATE ===");
+        System.out.printf("%-12s | %-10s | %-25s | %-20s | %12s\n",
+                "Date", "Time", "Description", "Vendor", "Amount");
+        System.out.println("-".repeat(90));
+
+        boolean found = false;
+        for (Transaction t : allTransactions) {
+            if (t.getDate().getYear() == currentYear) {
+                System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
+                        t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                        t.getTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                        t.getDescription(),
+                        t.getVendor(),
+                        t.getAmount());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No transactions found for this year.");
+        }
+    }
+
+    public static void displayPreviousYear() {
+        ArrayList<Transaction> allTransactions = loadTransactions();
+        int previousYear = LocalDate.now().getYear() - 1;
+
+        System.out.println("\n=== PREVIOUS YEAR ===");
+        System.out.printf("%-12s | %-10s | %-25s | %-20s | %12s\n",
+                "Date", "Time", "Description", "Vendor", "Amount");
+        System.out.println("-".repeat(90));
+
+        boolean found = false;
+        for (Transaction t : allTransactions) {
+            if (t.getDate().getYear() == previousYear) {
+                System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
+                        t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                        t.getTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                        t.getDescription(),
+                        t.getVendor(),
+                        t.getAmount());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No transactions found for previous year.");
+        }
+    }
+
+    public static void searchByVendor() {
+        ArrayList<Transaction> allTransactions = loadTransactions();
+        System.out.print("Enter vendor name: ");
+        String vendorSearch = scanner.nextLine();
+
+        System.out.println("\n=== SEARCH BY VENDOR: " + vendorSearch + " ===");
+        System.out.printf("%-12s | %-10s | %-25s | %-20s | %12s\n",
+                "Date", "Time", "Description", "Vendor", "Amount");
+        System.out.println("-".repeat(90));
+
+        boolean found = false;
+        for (Transaction t : allTransactions) {
+            if (t.getVendor().toLowerCase().contains(vendorSearch.toLowerCase())) {
+                System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
+                        t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                        t.getTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                        t.getDescription(),
+                        t.getVendor(),
+                        t.getAmount());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No transactions found for vendor: " + vendorSearch);
+        }
+    }
 }
-
-
-
