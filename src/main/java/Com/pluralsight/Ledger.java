@@ -307,26 +307,39 @@ public class Ledger {
             // stores in the variable
             Transaction t = transactions.get(i);
             System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
+                    //Gets the LocalDate/time object from transaction and formats it
+                    //t = variable transaction
                     t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
                     t.getTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                    //Gets description, vendor, and amount but does not need to be formatted
                     t.getDescription(),
                     t.getVendor(),
                     t.getAmount());
         }
     }
-
+// method does not give anything back like no return value
+    //display deposit method
+    // closed parenthesis means it does not take any input
     public static void displayDeposits() {
+       //A list that can hold transaction objects > variable = method that reads the CSV file
+        // so pretty much it opens the CSV file and reads every line, converts to each line into a transaction object
+        // and gives back a list.
         ArrayList<Transaction> transactions = loadTransactions();
 
         System.out.printf("%-12s | %-10s | %-25s | %-20s | %12s\n",
                 "Date", "Time", "Description", "Vendor", "Amount");
         System.out.println("-".repeat(90));
 
+        // true or false does it have deposits ?
         boolean hasDeposits = false;
+        // for loop (int index = # of transactions minus 1 from the index stops at -1;
+        // index greater or equal to 0 (start of index);
         for (int i = transactions.size() - 1; i >= 0; i--) {
+            //datatype variable = get index from the transaction list and store in variable t
             Transaction t = transactions.get(i);
 
             // Only show if amount is POSITIVE (money added)
+            // command if amount is greater than 0 (positive) then print
             if (t.getAmount() > 0) {
                 System.out.printf("%-12s | %-10s | %-25s | %-20s | $%,11.2f\n",
                         t.getDate().format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
@@ -334,10 +347,13 @@ public class Ledger {
                         t.getDescription(),
                         t.getVendor(),
                         t.getAmount());
+                //deposit is there
                 hasDeposits = true;
 
             }
         }
+        // if statement or conditional, no transaction found = print no deposit found
+        // if it does not have deposit (no deposit found) print message
         if (!hasDeposits) {
             System.out.println("No deposits found.");
         }
@@ -351,6 +367,7 @@ public class Ledger {
         System.out.println("-".repeat(90));
 
         boolean hasPayments = false;
+        // i -- = index decrease by 1
         for (int i = transactions.size() - 1; i >= 0; i--) {
             Transaction t = transactions.get(i);
 
@@ -369,40 +386,56 @@ public class Ledger {
             System.out.println("No deposits found.");
         }
     }
-
+// Method that reads the csv file and gives back a list of all transactions
     public static ArrayList<Transaction> loadTransactions() {
+       //A list that holds transaction objects variable (where we store data) = new empty list (transaction)
         ArrayList<Transaction> transactions = new ArrayList<>();
         try {
+            // file reader opens the file buffered reader reads the file line by line
             BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH));
 
+            // type of data variable
             String line;
+            // while loop keeps reading every line one by one until the end of the file
             while ((line = reader.readLine()) != null) {
+                // data type list parts, cut the line into pieces where pipe symbol is
+                // in other words separates date time description vendor and amount
                 String[] parts = line.split("\\|");
                 LocalDate date = LocalDate.parse(parts[0], DateTimeFormatter.ofPattern("MM-dd-yyyy"));
                 LocalTime time = LocalTime.parse(parts[1], DateTimeFormatter.ofPattern("HH:mm:ss"));
                 String description = parts[2];
                 String vendor = parts[3];
+                // turns text amount to math amount
                 double amount = Double.parseDouble(parts[4]);
+                // packages all the data together into one trans object
                 Transaction t = new Transaction(date, time, description, vendor, amount);
-                transactions.add(t);
+                transactions.add(t); // add array list
             }
             reader.close();
+            //handle situations instead of crashing
+            // in this case can not read file print message
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
+        // this returns the result
+        // returning list w. all transactions or error or empty but returns value
         return transactions;
-
     }
-
+// Declares method to takes one trans and saves it to the file
     public static void saveTransaction(Transaction record) {
-        try {
+        try { // try catch block
+       // Buff Writer is going to write line by line
+            // this opens the file to get ready to write inside the csv
+            // append = true means adds to the end and does not erase anything
+            // if append were false it would delete everything
+
             BufferedWriter writer = new BufferedWriter(
                     new FileWriter("src/main/resources/transactions.csv", true));
-            writer.write(record.toCSV());
-            writer.newLine();
-            writer.close();
+            writer.write(record.toCSV()); // converts transaction to CSV format and write it to the file
+            writer.newLine(); // so transaction goes on its own line instead of all trans on one line
+            writer.close(); // done writing close file and save changes
             System.out.println("Transaction saved!");
-
+// damage control if something goes wrong in this case saving the trans
         } catch (IOException e) {
             System.out.println("Error saving transaction: " + e.getMessage());
         }
