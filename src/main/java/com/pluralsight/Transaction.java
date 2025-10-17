@@ -1,4 +1,4 @@
-package Com.pluralsight;
+package com.pluralsight;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -7,8 +7,8 @@ public class Transaction {
     // Instance variables
     // what every trans will have
     // only code inside this class can directly access these
-    private LocalDate date;
-    private LocalTime time;
+    private final LocalDate date;
+    private final LocalTime time;
     private String description;
     private String vendor;
     private double amount;

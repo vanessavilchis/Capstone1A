@@ -1,4 +1,4 @@
-package Com.pluralsight;
+package com.pluralsight;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -9,18 +9,36 @@ import java.util.Scanner;
 
 
 public class Ledger {
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
 
     //Stores the location of my CSV file
     private static final String FILE_PATH = "src/main/resources/transactions.csv";
 
     public static void main(String[] args) {
+        createFileIfNotExists();
         System.out.println("=================================");
         System.out.println("       Welcome to Ledger App     ");
         System.out.println("=================================");
 
         //method to start the application loop
         run();
+    }
+    // NEW METHOD: Create file if it doesn't exist
+    private static void createFileIfNotExists() {
+        File file = new File(FILE_PATH);
+        File parentDir = file.getParentFile();
+
+        try {
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs();
+            }
+            if (!file.exists()) {
+                file.createNewFile();
+                System.out.println("Created new transactions file.");
+            }
+        } catch (IOException e) {
+            System.out.println("Error creating file: " + e.getMessage());
+        }
     }
 
     //main application loop
