@@ -1,0 +1,647 @@
+<html>
+<head>
+<title>Ledger.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Ledger.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com</span><span class="s2">.</span><span class="s1">pluralsight</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">time</span><span class="s2">.</span><span class="s1">LocalDate</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">time</span><span class="s2">.</span><span class="s1">LocalTime</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">time</span><span class="s2">.</span><span class="s1">format</span><span class="s2">.</span><span class="s1">DateTimeFormatter</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">ArrayList</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Scanner</span><span class="s2">;</span>
+
+
+<span class="s0">public class </span><span class="s1">Ledger </span><span class="s2">{</span>
+    <span class="s0">private static </span><span class="s1">Scanner scanner </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Scanner</span><span class="s2">(</span><span class="s1">System</span><span class="s2">.</span><span class="s1">in</span><span class="s2">);</span>
+
+    <span class="s3">//Stores the location of my CSV file</span>
+    <span class="s0">private static final </span><span class="s1">String FILE_PATH </span><span class="s2">= </span><span class="s4">&quot;src/main/resources/transactions.csv&quot;</span><span class="s2">;</span>
+
+    <span class="s0">public static void </span><span class="s1">main</span><span class="s2">(</span><span class="s1">String</span><span class="s2">[] </span><span class="s1">args</span><span class="s2">) {</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;=================================&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;       Welcome to Ledger App     &quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;=================================&quot;</span><span class="s2">);</span>
+
+        <span class="s3">//method to start the application loop</span>
+        <span class="s1">run</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s3">//main application loop</span>
+    <span class="s0">public static void </span><span class="s1">run</span><span class="s2">() {</span>
+        <span class="s3">//Infinite loop  keeps running forever until user prompt stopped (with System.exit(0))</span>
+        <span class="s0">while </span><span class="s2">(</span><span class="s0">true</span><span class="s2">) {</span>
+            <span class="s1">menu</span><span class="s2">();</span>
+            <span class="s1">menuSelector</span><span class="s2">();</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">menu</span><span class="s2">() {</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;What would you like to do?     &quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;  [D] Add Deposit&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;  [P] Make Payment (Debit)&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;  [L] Display Ledger&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;  [X] Exit the Application&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;=================================&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">menuSelector</span><span class="s2">() {</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter your selection: &quot;</span><span class="s2">);</span>
+        <span class="s1">String option </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">().</span><span class="s1">toUpperCase</span><span class="s2">();</span>
+
+<span class="s3">//Starts a switch statement - checks what letter the user entered.</span>
+        <span class="s0">switch </span><span class="s2">(</span><span class="s1">option</span><span class="s2">) {</span>
+            <span class="s0">case </span><span class="s4">&quot;D&quot;</span><span class="s2">:</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;=================================&quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">Please add your deposit information below: &quot;</span><span class="s2">);</span>
+                <span class="s1">addDeposit</span><span class="s2">();</span>
+                <span class="s0">break</span><span class="s2">; </span><span class="s3">//  exits the switch</span>
+            <span class="s0">case </span><span class="s4">&quot;P&quot;</span><span class="s2">:</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;=================================&quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">Enter payment information &quot;</span><span class="s2">);</span>
+                <span class="s1">makePayment</span><span class="s2">();</span>
+                <span class="s0">break</span><span class="s2">;</span>
+            <span class="s0">case </span><span class="s4">&quot;L&quot;</span><span class="s2">:</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;=================================&quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n </span><span class="s4">Display ledger &quot;</span><span class="s2">);</span>
+                <span class="s1">ledgerScreen</span><span class="s2">();</span>
+                <span class="s0">break</span><span class="s2">;</span>
+            <span class="s0">case </span><span class="s4">&quot;X&quot;</span><span class="s2">:</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;==================================&quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;   Thank you for using our app!   &quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;           Goodbye!                &quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;==================================&quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">exit</span><span class="s2">(</span><span class="s5">0</span><span class="s2">); </span><span class="s3">//exit program status 0 means successfully closed</span>
+                <span class="s0">break</span><span class="s2">;</span>
+            <span class="s0">default</span><span class="s2">:</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Invalid option, try again&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">Press ENTER to continue...&quot;</span><span class="s2">);</span>
+        <span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">addDeposit</span><span class="s2">() {</span>
+        <span class="s3">//Declares two variables to store the date and time.</span>
+        <span class="s1">LocalDate date</span><span class="s2">;</span>
+        <span class="s1">LocalTime time</span><span class="s2">;</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Use current date and time? (Y/N): &quot;</span><span class="s2">);</span>
+        <span class="s1">String choice </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">().</span><span class="s1">toLowerCase</span><span class="s2">();</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">choice</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s4">&quot;n&quot;</span><span class="s2">)) {</span>
+            <span class="s3">//Infinite loop for date entry - keeps asking until valid date entered.</span>
+            <span class="s0">while </span><span class="s2">(</span><span class="s0">true</span><span class="s2">) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter date (MM-dd-yyyy) or press ENTER to skip: &quot;</span><span class="s2">);</span>
+                <span class="s1">String dateInput </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+                <span class="s0">if </span><span class="s2">(</span><span class="s1">dateInput</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) {</span>
+                    <span class="s1">date </span><span class="s2">= </span><span class="s1">LocalDate</span><span class="s2">.</span><span class="s1">now</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s2">}</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s3">//parse converts user's text into a LocalDate</span>
+                    <span class="s3">// dateTimeFormatter defines expected format</span>
+                    <span class="s1">date </span><span class="s2">= </span><span class="s1">LocalDate</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">dateInput</span><span class="s2">, </span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM-dd-yyyy&quot;</span><span class="s2">));</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+
+                    <span class="s3">// If invalid format, catch the error.</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Invalid date format! Please use MM-dd-yyyy (e.g., 10-14-2025).&quot;</span><span class="s2">);</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+            <span class="s3">//Loops until valid time entered or Enter to use current time</span>
+            <span class="s0">while </span><span class="s2">(</span><span class="s0">true</span><span class="s2">) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter time (HH:mm:ss) or press ENTER to skip: &quot;</span><span class="s2">);</span>
+                <span class="s1">String timeInput </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+
+                <span class="s0">if </span><span class="s2">(</span><span class="s1">timeInput</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) {</span>
+                    <span class="s1">time </span><span class="s2">= </span><span class="s1">LocalTime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s2">}</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">time </span><span class="s2">= </span><span class="s1">LocalTime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">timeInput</span><span class="s2">, </span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;HH:mm:ss&quot;</span><span class="s2">));</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Invalid time format! Please use HH:mm:ss (e.g., 14:30:00).&quot;</span><span class="s2">);</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{ </span><span class="s3">// If user typed &quot;y&quot; yes, use current date/time</span>
+            <span class="s1">date </span><span class="s2">= </span><span class="s1">LocalDate</span><span class="s2">.</span><span class="s1">now</span><span class="s2">();</span>
+            <span class="s1">time </span><span class="s2">= </span><span class="s1">LocalTime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">();</span>
+        <span class="s2">}</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter description: &quot;</span><span class="s2">);</span>
+        <span class="s1">String description </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">();</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter vendor: &quot;</span><span class="s2">);</span>
+        <span class="s1">String vendor </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">();</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter amount: &quot;</span><span class="s2">);</span>
+        <span class="s0">double </span><span class="s1">amount </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextDouble</span><span class="s2">();</span>
+        <span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">();</span>
+
+        <span class="s3">// Always make deposits positive(removes negative sign) because we are ADDING deposit</span>
+        <span class="s3">//returns the absolute value</span>
+        <span class="s1">amount </span><span class="s2">= </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">abs</span><span class="s2">(</span><span class="s1">amount</span><span class="s2">);</span>
+
+        <span class="s3">//Creates a new Transaction object with all the information</span>
+        <span class="s1">Transaction deposit </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Transaction</span><span class="s2">(</span><span class="s1">date</span><span class="s2">, </span><span class="s1">time</span><span class="s2">, </span><span class="s1">description</span><span class="s2">, </span><span class="s1">vendor</span><span class="s2">, </span><span class="s1">amount</span><span class="s2">);</span>
+
+        <span class="s3">//This method writes the transaction to the CSV file</span>
+        <span class="s1">saveTransaction</span><span class="s2">(</span><span class="s1">deposit</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Deposit saved successfully!&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">//method to record a payment - the money going out</span>
+    <span class="s0">public static void </span><span class="s1">makePayment</span><span class="s2">() {</span>
+        <span class="s3">//Declares variables to store the payment's date and time.</span>
+        <span class="s1">LocalDate date</span><span class="s2">;</span>
+        <span class="s1">LocalTime time</span><span class="s2">;</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Use current date and time? (Y/N): &quot;</span><span class="s2">);</span>
+        <span class="s3">//Reads the user's answer, trims, and converts to lowercase</span>
+        <span class="s1">String choice </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">().</span><span class="s1">toLowerCase</span><span class="s2">();</span>
+
+        <span class="s3">//If user typed &quot;n&quot; (no), they want to enter a specific date/time.</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">choice</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s4">&quot;n&quot;</span><span class="s2">)) {</span>
+            <span class="s0">while </span><span class="s2">(</span><span class="s0">true</span><span class="s2">) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter date (MM-dd-yyyy) or press ENTER to skip: &quot;</span><span class="s2">);</span>
+                <span class="s1">String dateInput </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+
+                <span class="s0">if </span><span class="s2">(</span><span class="s1">dateInput</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) {</span>
+                    <span class="s1">date </span><span class="s2">= </span><span class="s1">LocalDate</span><span class="s2">.</span><span class="s1">now</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s2">}</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s3">//expects format like &quot;MM-dd-yyyy&quot;</span>
+                    <span class="s3">//If input is &quot;October 16&quot; or / instead of -, it will fail</span>
+                    <span class="s1">date </span><span class="s2">= </span><span class="s1">LocalDate</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">dateInput</span><span class="s2">, </span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM-dd-yyyy&quot;</span><span class="s2">));</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Invalid date format! Please use MM-dd-yyyy (e.g., 10-14-2025).&quot;</span><span class="s2">);</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+            <span class="s0">while </span><span class="s2">(</span><span class="s0">true</span><span class="s2">) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter time (HH:mm:ss) or press ENTER to skip: &quot;</span><span class="s2">);</span>
+                <span class="s1">String timeInput </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+
+                <span class="s0">if </span><span class="s2">(</span><span class="s1">timeInput</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) {</span>
+                    <span class="s1">time </span><span class="s2">= </span><span class="s1">LocalTime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">(); </span><span class="s3">//gets the current time from  computer</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s2">}</span>
+                <span class="s0">try </span><span class="s2">{</span>
+                    <span class="s1">time </span><span class="s2">= </span><span class="s1">LocalTime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">timeInput</span><span class="s2">, </span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;HH:mm:ss&quot;</span><span class="s2">));</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Invalid time format! Please use HH:mm:ss (e.g., 14:30:00).&quot;</span><span class="s2">);</span>
+                <span class="s2">}</span>
+            <span class="s2">}</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s3">//If user typed &quot;y&quot;</span>
+            <span class="s1">date </span><span class="s2">= </span><span class="s1">LocalDate</span><span class="s2">.</span><span class="s1">now</span><span class="s2">();</span>
+            <span class="s1">time </span><span class="s2">= </span><span class="s1">LocalTime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">();</span>
+        <span class="s2">}</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter description: &quot;</span><span class="s2">);</span>
+        <span class="s1">String description </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">();</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter vendor: &quot;</span><span class="s2">);</span>
+        <span class="s1">String vendor </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">();</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter amount: &quot;</span><span class="s2">);</span>
+        <span class="s0">double </span><span class="s1">amount </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextDouble</span><span class="s2">();</span>
+        <span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">();</span>
+
+        <span class="s3">// Always make payments negative bc we are making a payment so -</span>
+        <span class="s1">amount </span><span class="s2">= -</span><span class="s1">Math</span><span class="s2">.</span><span class="s1">abs</span><span class="s2">(</span><span class="s1">amount</span><span class="s2">);</span>
+
+
+        <span class="s3">//Creates a new Transaction object by collecting data and storing it in variable &quot;payment&quot;</span>
+        <span class="s1">Transaction payment </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Transaction</span><span class="s2">(</span><span class="s1">date</span><span class="s2">, </span><span class="s1">time</span><span class="s2">, </span><span class="s1">description</span><span class="s2">, </span><span class="s1">vendor</span><span class="s2">, </span><span class="s1">amount</span><span class="s2">);</span>
+
+        <span class="s3">//This method writes the transaction to the CSV file</span>
+        <span class="s1">saveTransaction</span><span class="s2">(</span><span class="s1">payment</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Payment saved!&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">//method that displays the ledger menu</span>
+    <span class="s0">public static void </span><span class="s1">ledgerScreen</span><span class="s2">() {</span>
+        <span class="s3">//keep showing menu until close</span>
+        <span class="s0">boolean </span><span class="s1">keepRunning </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+
+        <span class="s0">while </span><span class="s2">(</span><span class="s1">keepRunning</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;==================================&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;             Ledger               &quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;             Screen               &quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;==================================&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot; A - All - Display all entries&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot; D - Deposits - Display only deposits&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot; P - Payments - Display only payments&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot; R - Reports - Run reports&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot; H - Home - Go back to home&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter your choice: &quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;=====================&quot;</span><span class="s2">);</span>
+
+            <span class="s1">String choice </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">().</span><span class="s1">toUpperCase</span><span class="s2">();</span>
+
+<span class="s3">//checks what letter user entered and executes matching case.</span>
+            <span class="s0">switch </span><span class="s2">(</span><span class="s1">choice</span><span class="s2">) {</span>
+                <span class="s0">case </span><span class="s4">&quot;A&quot;</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n </span><span class="s4">-----ALL TRANSACTIONS---Newest First-----&quot;</span><span class="s2">);</span>
+                    <span class="s1">displayAll</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;D&quot;</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">-----DEPOSITS ONLY---Newest First------&quot;</span><span class="s2">);</span>
+                    <span class="s1">displayDeposits</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;P&quot;</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">-----PAYMENTS ONLY---Newest First----&quot;</span><span class="s2">);</span>
+                    <span class="s1">displayPayments</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;R&quot;</span><span class="s2">:</span>
+                    <span class="s1">reportsScreen</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;H&quot;</span><span class="s2">:</span>
+                    <span class="s1">keepRunning </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">default</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Invalid choice. Please enter A, D, P, R, or H.&quot;</span><span class="s2">);</span>
+            <span class="s2">}</span>
+            <span class="s3">// pause after displaying transactions</span>
+            <span class="s3">// in ledger menu AND user chose to see all transactions OR chose deposits or Payments</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">keepRunning </span><span class="s2">&amp;&amp; (</span><span class="s1">choice</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s4">&quot;A&quot;</span><span class="s2">) || </span><span class="s1">choice</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s4">&quot;D&quot;</span><span class="s2">) || </span><span class="s1">choice</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s4">&quot;P&quot;</span><span class="s2">))) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">Press ENTER to continue...&quot;</span><span class="s2">);</span>
+                <span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">();</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">reportsScreen</span><span class="s2">() {</span>
+        <span class="s0">boolean </span><span class="s1">keepRunning </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+
+        <span class="s0">while </span><span class="s2">(</span><span class="s1">keepRunning</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">==================================&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;             Reports              &quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;==================================&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot; 1) Month To Date&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot; 2) Previous Month&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot; 3) Year To Date&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot; 4) Previous Year&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot; 5) Search by Vendor&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot; 0) Back - Return to Ledger&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;==================================&quot;</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter your choice: &quot;</span><span class="s2">);</span>
+
+            <span class="s1">String choice </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">().</span><span class="s1">trim</span><span class="s2">();</span>
+
+            <span class="s0">switch </span><span class="s2">(</span><span class="s1">choice</span><span class="s2">) {</span>
+                <span class="s0">case </span><span class="s4">&quot;1&quot;</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">-----MONTH TO DATE-----&quot;</span><span class="s2">);</span>
+                    <span class="s1">displayMonthToDate</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;2&quot;</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">-----PREVIOUS MONTH-----&quot;</span><span class="s2">);</span>
+                    <span class="s1">displayPreviousMonth</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;3&quot;</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">-----YEAR TO DATE-----&quot;</span><span class="s2">);</span>
+                    <span class="s1">displayYearToDate</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;4&quot;</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">-----PREVIOUS YEAR-----&quot;</span><span class="s2">);</span>
+                    <span class="s1">displayPreviousYear</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;5&quot;</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">-----SEARCH BY VENDOR-----&quot;</span><span class="s2">);</span>
+                    <span class="s1">searchByVendor</span><span class="s2">();</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">case </span><span class="s4">&quot;0&quot;</span><span class="s2">:</span>
+                    <span class="s1">keepRunning </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+                    <span class="s0">break</span><span class="s2">;</span>
+                <span class="s0">default</span><span class="s2">:</span>
+                    <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Invalid choice. Please try again.&quot;</span><span class="s2">);</span>
+            <span class="s2">}</span>
+
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">keepRunning </span><span class="s2">&amp;&amp; !</span><span class="s1">choice</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s4">&quot;0&quot;</span><span class="s2">)) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">Press ENTER to continue...&quot;</span><span class="s2">);</span>
+                <span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">();</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">//method to display all transactions both deposits and payments</span>
+    <span class="s0">public static void </span><span class="s1">displayAll</span><span class="s2">() {</span>
+        <span class="s3">//Loads all transactions from CSV file and returns an ArrayList</span>
+        <span class="s3">//Stores all transactions in transactions variable</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Transaction</span><span class="s2">&gt; </span><span class="s1">transactions </span><span class="s2">= </span><span class="s1">loadTransactions</span><span class="s2">();</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">transactions</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;No transactions found.&quot;</span><span class="s2">);</span>
+            <span class="s3">//exits the method</span>
+            <span class="s0">return</span><span class="s2">;</span>
+        <span class="s2">}</span>
+
+        <span class="s3">//Prints formatted column headers</span>
+        <span class="s3">// % placeholder (-) aligned to the left, # is space for characters wide, string and Pipe</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | %12s</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">, </span><span class="s3">// Number with commas, 11 characters, 2 decimals format</span>
+                <span class="s4">&quot;Date&quot;</span><span class="s2">, </span><span class="s4">&quot;Time&quot;</span><span class="s2">, </span><span class="s4">&quot;Description&quot;</span><span class="s2">, </span><span class="s4">&quot;Vendor&quot;</span><span class="s2">, </span><span class="s4">&quot;Amount&quot;</span><span class="s2">);</span>
+
+        <span class="s3">//separator line printing the - dash 90 times across to separate this is a way to format and separate</span>
+        <span class="s3">// easier to read the header and data</span>
+        <span class="s3">// 80 characters wide + 10 for extra space and account for pipe</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">.</span><span class="s1">repeat</span><span class="s2">(</span><span class="s5">90</span><span class="s2">));</span>
+
+        <span class="s3">// Show newest first so in reverse order</span>
+        <span class="s3">//Start at the LAST index (newest transaction)</span>
+        <span class="s3">//Continue until we reach index 0</span>
+        <span class="s3">//Decrease by 1 each time (moving backwards)</span>
+        <span class="s3">// for loop (int index = the number of transactions -1); // index greater than or equal to 0</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s1">transactions</span><span class="s2">.</span><span class="s1">size</span><span class="s2">() - </span><span class="s5">1</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&gt;= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i</span><span class="s2">--) {</span>
+
+            <span class="s3">// gets one transaction from the Array list</span>
+            <span class="s3">// transactions.get(i) = gets the transaction at index</span>
+            <span class="s3">// stores in the variable</span>
+            <span class="s1">Transaction t </span><span class="s2">= </span><span class="s1">transactions</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">i</span><span class="s2">);</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | $%,11.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                    <span class="s3">//Gets the LocalDate/time object from transaction and formats it</span>
+                    <span class="s3">//t = variable transaction</span>
+                    <span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM-dd-yyyy&quot;</span><span class="s2">)),</span>
+                    <span class="s1">t</span><span class="s2">.</span><span class="s1">getTime</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;HH:mm:ss&quot;</span><span class="s2">)),</span>
+                    <span class="s3">//Gets description, vendor, and amount but does not need to be formatted</span>
+                    <span class="s1">t</span><span class="s2">.</span><span class="s1">getDescription</span><span class="s2">(),</span>
+                    <span class="s1">t</span><span class="s2">.</span><span class="s1">getVendor</span><span class="s2">(),</span>
+                    <span class="s1">t</span><span class="s2">.</span><span class="s1">getAmount</span><span class="s2">());</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s3">// method does not give anything back like no return value</span>
+    <span class="s3">//display deposit method</span>
+    <span class="s3">// closed parenthesis means it does not take any input</span>
+    <span class="s0">public static void </span><span class="s1">displayDeposits</span><span class="s2">() {</span>
+       <span class="s3">//A list that can hold transaction objects &gt; variable = method that reads the CSV file</span>
+        <span class="s3">// so pretty much it opens the CSV file and reads every line, converts to each line into a transaction object</span>
+        <span class="s3">// and gives back a list.</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Transaction</span><span class="s2">&gt; </span><span class="s1">transactions </span><span class="s2">= </span><span class="s1">loadTransactions</span><span class="s2">();</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | %12s</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Date&quot;</span><span class="s2">, </span><span class="s4">&quot;Time&quot;</span><span class="s2">, </span><span class="s4">&quot;Description&quot;</span><span class="s2">, </span><span class="s4">&quot;Vendor&quot;</span><span class="s2">, </span><span class="s4">&quot;Amount&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">.</span><span class="s1">repeat</span><span class="s2">(</span><span class="s5">90</span><span class="s2">));</span>
+
+        <span class="s3">// true or false does it have deposits ?</span>
+        <span class="s0">boolean </span><span class="s1">hasDeposits </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+        <span class="s3">// for loop (int index = # of transactions minus 1 from the index stops at -1;</span>
+        <span class="s3">// index greater or equal to 0 (start of index);</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s1">transactions</span><span class="s2">.</span><span class="s1">size</span><span class="s2">() - </span><span class="s5">1</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&gt;= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i</span><span class="s2">--) {</span>
+            <span class="s3">//datatype variable = get index from the transaction list and store in variable t</span>
+            <span class="s1">Transaction t </span><span class="s2">= </span><span class="s1">transactions</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">i</span><span class="s2">);</span>
+
+            <span class="s3">// Only show if amount is POSITIVE (money added)</span>
+            <span class="s3">// command if amount is greater than 0 (positive) then print</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">t</span><span class="s2">.</span><span class="s1">getAmount</span><span class="s2">() &gt; </span><span class="s5">0</span><span class="s2">) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | $%,11.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM-dd-yyyy&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getTime</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;HH:mm:ss&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDescription</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getVendor</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getAmount</span><span class="s2">());</span>
+                <span class="s3">//deposit is there</span>
+                <span class="s1">hasDeposits </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s3">// if statement or conditional, no transaction found = print no deposit found</span>
+        <span class="s3">// if it does not have deposit (no deposit found) print message</span>
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">hasDeposits</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;No deposits found.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">displayPayments</span><span class="s2">() {</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Transaction</span><span class="s2">&gt; </span><span class="s1">transactions </span><span class="s2">= </span><span class="s1">loadTransactions</span><span class="s2">();</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | %12s</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Date&quot;</span><span class="s2">, </span><span class="s4">&quot;Time&quot;</span><span class="s2">, </span><span class="s4">&quot;Description&quot;</span><span class="s2">, </span><span class="s4">&quot;Vendor&quot;</span><span class="s2">, </span><span class="s4">&quot;Amount&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">.</span><span class="s1">repeat</span><span class="s2">(</span><span class="s5">90</span><span class="s2">));</span>
+
+        <span class="s0">boolean </span><span class="s1">hasPayments </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+        <span class="s3">// i -- = index decrease by 1</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s1">transactions</span><span class="s2">.</span><span class="s1">size</span><span class="s2">() - </span><span class="s5">1</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&gt;= </span><span class="s5">0</span><span class="s2">; </span><span class="s1">i</span><span class="s2">--) {</span>
+            <span class="s1">Transaction t </span><span class="s2">= </span><span class="s1">transactions</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">i</span><span class="s2">);</span>
+
+            <span class="s3">// Only show if amount is NEGATIVE (money paid)</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">t</span><span class="s2">.</span><span class="s1">getAmount</span><span class="s2">() &lt; </span><span class="s5">0</span><span class="s2">) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | $%,11.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM-dd-yyyy&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getTime</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;HH:mm:ss&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDescription</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getVendor</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getAmount</span><span class="s2">());</span>
+                <span class="s1">hasPayments </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">hasPayments</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;No payments found.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s3">// Method that reads the csv file and gives back a list of all transactions</span>
+    <span class="s0">public static </span><span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Transaction</span><span class="s2">&gt; </span><span class="s1">loadTransactions</span><span class="s2">() {</span>
+       <span class="s3">//A list that holds transaction objects variable (where we store data) = new empty list (transaction)</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Transaction</span><span class="s2">&gt; </span><span class="s1">transactions </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;();</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s3">// file reader opens the file buffered reader reads the file line by line</span>
+            <span class="s1">BufferedReader reader </span><span class="s2">= </span><span class="s0">new </span><span class="s1">BufferedReader</span><span class="s2">(</span><span class="s0">new </span><span class="s1">FileReader</span><span class="s2">(</span><span class="s1">FILE_PATH</span><span class="s2">));</span>
+
+            <span class="s3">// type of data variable</span>
+            <span class="s1">String line</span><span class="s2">;</span>
+            <span class="s3">// while loop keeps reading every line one by one until the end of the file</span>
+            <span class="s0">while </span><span class="s2">((</span><span class="s1">line </span><span class="s2">= </span><span class="s1">reader</span><span class="s2">.</span><span class="s1">readLine</span><span class="s2">()) != </span><span class="s0">null</span><span class="s2">) {</span>
+                <span class="s3">// data type list parts, cut the line into pieces where pipe symbol is</span>
+                <span class="s3">// in other words separates date time description vendor and amount</span>
+                <span class="s1">String</span><span class="s2">[] </span><span class="s1">parts </span><span class="s2">= </span><span class="s1">line</span><span class="s2">.</span><span class="s1">split</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\\</span><span class="s4">|&quot;</span><span class="s2">);</span>
+                <span class="s1">LocalDate date </span><span class="s2">= </span><span class="s1">LocalDate</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">parts</span><span class="s2">[</span><span class="s5">0</span><span class="s2">], </span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM-dd-yyyy&quot;</span><span class="s2">));</span>
+                <span class="s1">LocalTime time </span><span class="s2">= </span><span class="s1">LocalTime</span><span class="s2">.</span><span class="s1">parse</span><span class="s2">(</span><span class="s1">parts</span><span class="s2">[</span><span class="s5">1</span><span class="s2">], </span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;HH:mm:ss&quot;</span><span class="s2">));</span>
+                <span class="s1">String description </span><span class="s2">= </span><span class="s1">parts</span><span class="s2">[</span><span class="s5">2</span><span class="s2">];</span>
+                <span class="s1">String vendor </span><span class="s2">= </span><span class="s1">parts</span><span class="s2">[</span><span class="s5">3</span><span class="s2">];</span>
+                <span class="s3">// turns text amount to math amount</span>
+                <span class="s0">double </span><span class="s1">amount </span><span class="s2">= </span><span class="s1">Double</span><span class="s2">.</span><span class="s1">parseDouble</span><span class="s2">(</span><span class="s1">parts</span><span class="s2">[</span><span class="s5">4</span><span class="s2">]);</span>
+                <span class="s3">// packages all the data together into one trans object</span>
+                <span class="s1">Transaction t </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Transaction</span><span class="s2">(</span><span class="s1">date</span><span class="s2">, </span><span class="s1">time</span><span class="s2">, </span><span class="s1">description</span><span class="s2">, </span><span class="s1">vendor</span><span class="s2">, </span><span class="s1">amount</span><span class="s2">);</span>
+                <span class="s1">transactions</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">t</span><span class="s2">); </span><span class="s3">// add array list</span>
+            <span class="s2">}</span>
+            <span class="s1">reader</span><span class="s2">.</span><span class="s1">close</span><span class="s2">();</span>
+            <span class="s3">//handle situations instead of crashing</span>
+            <span class="s3">// in this case can not read file print message</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">IOException e</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Error reading file: &quot; </span><span class="s2">+ </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+        <span class="s2">}</span>
+        <span class="s3">// this returns the result</span>
+        <span class="s3">// returning list w. all transactions or error or empty but returns value</span>
+        <span class="s0">return </span><span class="s1">transactions</span><span class="s2">;</span>
+    <span class="s2">}</span>
+<span class="s3">// Declares method to takes one trans and saves it to the file</span>
+    <span class="s0">public static void </span><span class="s1">saveTransaction</span><span class="s2">(</span><span class="s1">Transaction record</span><span class="s2">) {</span>
+        <span class="s0">try </span><span class="s2">{ </span><span class="s3">// try catch block</span>
+       <span class="s3">// Buff Writer is going to write line by line</span>
+            <span class="s3">// this opens the file to get ready to write inside the csv</span>
+            <span class="s3">// append = true means adds to the end and does not erase anything</span>
+            <span class="s3">// if append were false it would delete everything</span>
+
+            <span class="s1">BufferedWriter writer </span><span class="s2">= </span><span class="s0">new </span><span class="s1">BufferedWriter</span><span class="s2">(</span>
+                    <span class="s0">new </span><span class="s1">FileWriter</span><span class="s2">(</span><span class="s4">&quot;src/main/resources/transactions.csv&quot;</span><span class="s2">, </span><span class="s0">true</span><span class="s2">));</span>
+            <span class="s1">writer</span><span class="s2">.</span><span class="s1">write</span><span class="s2">(</span><span class="s1">record</span><span class="s2">.</span><span class="s1">toCSV</span><span class="s2">()); </span><span class="s3">// converts transaction to CSV format and write it to the file</span>
+            <span class="s1">writer</span><span class="s2">.</span><span class="s1">newLine</span><span class="s2">(); </span><span class="s3">// so transaction goes on its own line instead of all trans on one line</span>
+            <span class="s1">writer</span><span class="s2">.</span><span class="s1">close</span><span class="s2">(); </span><span class="s3">// done writing close file and save changes</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Transaction saved!&quot;</span><span class="s2">);</span>
+<span class="s3">// damage control if something goes wrong in this case saving the trans</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">IOException e</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Error saving transaction: &quot; </span><span class="s2">+ </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+    <span class="s0">public static void </span><span class="s1">displayMonthToDate</span><span class="s2">() {</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Transaction</span><span class="s2">&gt; </span><span class="s1">allTransactions </span><span class="s2">= </span><span class="s1">loadTransactions</span><span class="s2">();</span>
+        <span class="s1">LocalDate now </span><span class="s2">= </span><span class="s1">LocalDate</span><span class="s2">.</span><span class="s1">now</span><span class="s2">();</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">=== MONTH TO DATE ===&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | %12s</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Date&quot;</span><span class="s2">, </span><span class="s4">&quot;Time&quot;</span><span class="s2">, </span><span class="s4">&quot;Description&quot;</span><span class="s2">, </span><span class="s4">&quot;Vendor&quot;</span><span class="s2">, </span><span class="s4">&quot;Amount&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">.</span><span class="s1">repeat</span><span class="s2">(</span><span class="s5">90</span><span class="s2">));</span>
+
+        <span class="s0">boolean </span><span class="s1">found </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Transaction t </span><span class="s2">: </span><span class="s1">allTransactions</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">getMonth</span><span class="s2">() == </span><span class="s1">now</span><span class="s2">.</span><span class="s1">getMonth</span><span class="s2">() &amp;&amp;</span>
+                    <span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">getYear</span><span class="s2">() == </span><span class="s1">now</span><span class="s2">.</span><span class="s1">getYear</span><span class="s2">()) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | $%,11.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM-dd-yyyy&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getTime</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;HH:mm:ss&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDescription</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getVendor</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getAmount</span><span class="s2">());</span>
+                <span class="s1">found </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">found</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;No transactions found for this month.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">displayPreviousMonth</span><span class="s2">() {</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Transaction</span><span class="s2">&gt; </span><span class="s1">allTransactions </span><span class="s2">= </span><span class="s1">loadTransactions</span><span class="s2">();</span>
+        <span class="s1">LocalDate lastMonth </span><span class="s2">= </span><span class="s1">LocalDate</span><span class="s2">.</span><span class="s1">now</span><span class="s2">().</span><span class="s1">minusMonths</span><span class="s2">(</span><span class="s5">1</span><span class="s2">);</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">=== PREVIOUS MONTH ===&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | %12s</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Date&quot;</span><span class="s2">, </span><span class="s4">&quot;Time&quot;</span><span class="s2">, </span><span class="s4">&quot;Description&quot;</span><span class="s2">, </span><span class="s4">&quot;Vendor&quot;</span><span class="s2">, </span><span class="s4">&quot;Amount&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">.</span><span class="s1">repeat</span><span class="s2">(</span><span class="s5">90</span><span class="s2">));</span>
+
+        <span class="s0">boolean </span><span class="s1">found </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Transaction t </span><span class="s2">: </span><span class="s1">allTransactions</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">getMonth</span><span class="s2">() == </span><span class="s1">lastMonth</span><span class="s2">.</span><span class="s1">getMonth</span><span class="s2">() &amp;&amp;</span>
+                    <span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">getYear</span><span class="s2">() == </span><span class="s1">lastMonth</span><span class="s2">.</span><span class="s1">getYear</span><span class="s2">()) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | $%,11.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM-dd-yyyy&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getTime</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;HH:mm:ss&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDescription</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getVendor</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getAmount</span><span class="s2">());</span>
+                <span class="s1">found </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">found</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;No transactions found for previous month.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">displayYearToDate</span><span class="s2">() {</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Transaction</span><span class="s2">&gt; </span><span class="s1">allTransactions </span><span class="s2">= </span><span class="s1">loadTransactions</span><span class="s2">();</span>
+        <span class="s0">int </span><span class="s1">currentYear </span><span class="s2">= </span><span class="s1">LocalDate</span><span class="s2">.</span><span class="s1">now</span><span class="s2">().</span><span class="s1">getYear</span><span class="s2">();</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">=== YEAR TO DATE ===&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | %12s</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Date&quot;</span><span class="s2">, </span><span class="s4">&quot;Time&quot;</span><span class="s2">, </span><span class="s4">&quot;Description&quot;</span><span class="s2">, </span><span class="s4">&quot;Vendor&quot;</span><span class="s2">, </span><span class="s4">&quot;Amount&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">.</span><span class="s1">repeat</span><span class="s2">(</span><span class="s5">90</span><span class="s2">));</span>
+
+        <span class="s0">boolean </span><span class="s1">found </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Transaction t </span><span class="s2">: </span><span class="s1">allTransactions</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">getYear</span><span class="s2">() == </span><span class="s1">currentYear</span><span class="s2">) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | $%,11.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM-dd-yyyy&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getTime</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;HH:mm:ss&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDescription</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getVendor</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getAmount</span><span class="s2">());</span>
+                <span class="s1">found </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">found</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;No transactions found for this year.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">displayPreviousYear</span><span class="s2">() {</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Transaction</span><span class="s2">&gt; </span><span class="s1">allTransactions </span><span class="s2">= </span><span class="s1">loadTransactions</span><span class="s2">();</span>
+        <span class="s0">int </span><span class="s1">previousYear </span><span class="s2">= </span><span class="s1">LocalDate</span><span class="s2">.</span><span class="s1">now</span><span class="s2">().</span><span class="s1">getYear</span><span class="s2">() - </span><span class="s5">1</span><span class="s2">;</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">=== PREVIOUS YEAR ===&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | %12s</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Date&quot;</span><span class="s2">, </span><span class="s4">&quot;Time&quot;</span><span class="s2">, </span><span class="s4">&quot;Description&quot;</span><span class="s2">, </span><span class="s4">&quot;Vendor&quot;</span><span class="s2">, </span><span class="s4">&quot;Amount&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">.</span><span class="s1">repeat</span><span class="s2">(</span><span class="s5">90</span><span class="s2">));</span>
+
+        <span class="s0">boolean </span><span class="s1">found </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Transaction t </span><span class="s2">: </span><span class="s1">allTransactions</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">getYear</span><span class="s2">() == </span><span class="s1">previousYear</span><span class="s2">) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | $%,11.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM-dd-yyyy&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getTime</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;HH:mm:ss&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDescription</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getVendor</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getAmount</span><span class="s2">());</span>
+                <span class="s1">found </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">found</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;No transactions found for previous year.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">searchByVendor</span><span class="s2">() {</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Transaction</span><span class="s2">&gt; </span><span class="s1">allTransactions </span><span class="s2">= </span><span class="s1">loadTransactions</span><span class="s2">();</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">print</span><span class="s2">(</span><span class="s4">&quot;Enter vendor name: &quot;</span><span class="s2">);</span>
+        <span class="s1">String vendorSearch </span><span class="s2">= </span><span class="s1">scanner</span><span class="s2">.</span><span class="s1">nextLine</span><span class="s2">();</span>
+
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">=== SEARCH BY VENDOR: &quot; </span><span class="s2">+ </span><span class="s1">vendorSearch </span><span class="s2">+ </span><span class="s4">&quot; ===&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | %12s</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                <span class="s4">&quot;Date&quot;</span><span class="s2">, </span><span class="s4">&quot;Time&quot;</span><span class="s2">, </span><span class="s4">&quot;Description&quot;</span><span class="s2">, </span><span class="s4">&quot;Vendor&quot;</span><span class="s2">, </span><span class="s4">&quot;Amount&quot;</span><span class="s2">);</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">.</span><span class="s1">repeat</span><span class="s2">(</span><span class="s5">90</span><span class="s2">));</span>
+
+        <span class="s0">boolean </span><span class="s1">found </span><span class="s2">= </span><span class="s0">false</span><span class="s2">;</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">Transaction t </span><span class="s2">: </span><span class="s1">allTransactions</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">t</span><span class="s2">.</span><span class="s1">getVendor</span><span class="s2">().</span><span class="s1">toLowerCase</span><span class="s2">().</span><span class="s1">contains</span><span class="s2">(</span><span class="s1">vendorSearch</span><span class="s2">.</span><span class="s1">toLowerCase</span><span class="s2">())) {</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">printf</span><span class="s2">(</span><span class="s4">&quot;%-12s | %-10s | %-25s | %-20s | $%,11.2f</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">,</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDate</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;MM-dd-yyyy&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getTime</span><span class="s2">().</span><span class="s1">format</span><span class="s2">(</span><span class="s1">DateTimeFormatter</span><span class="s2">.</span><span class="s1">ofPattern</span><span class="s2">(</span><span class="s4">&quot;HH:mm:ss&quot;</span><span class="s2">)),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getDescription</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getVendor</span><span class="s2">(),</span>
+                        <span class="s1">t</span><span class="s2">.</span><span class="s1">getAmount</span><span class="s2">());</span>
+                <span class="s1">found </span><span class="s2">= </span><span class="s0">true</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+        <span class="s0">if </span><span class="s2">(!</span><span class="s1">found</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;No transactions found for vendor: &quot; </span><span class="s2">+ </span><span class="s1">vendorSearch</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

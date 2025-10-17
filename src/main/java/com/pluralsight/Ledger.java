@@ -251,9 +251,8 @@ public class Ledger {
             System.out.println(" P - Payments - Display only payments");
             System.out.println(" R - Reports - Run reports");
             System.out.println(" H - Home - Go back to home");
-            System.out.print("Enter your choice: ");
-            System.out.println("=====================");
-
+            System.out.println("==================================");
+            System.out.print("Enter your choice:  ");
             String choice = scanner.nextLine().trim().toUpperCase();
 
 //checks what letter user entered and executes matching case.
